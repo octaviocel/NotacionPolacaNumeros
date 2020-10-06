@@ -26,18 +26,23 @@ public class mainNumeros {
 
 				ListaColNu cola=new ListaColNu();
 				String fre= li.readLine();
-				StringTokenizer tokens = new StringTokenizer(fre);
+				StringTokenizer tokens = new StringTokenizer(fre," ");
 				while(tokens.hasMoreTokens()){
 					cola.put(tokens.nextToken());
 				}
 				int resul = resuelve(cola);
 				System.out.println("El resultado de tu notacion polaca es: ");
 				System.out.println(resul);
+				
 				reader.close();
+				/*while(cola.inicio!=null) {
+					System.out.println(cola.inicio.dato);
+					cola.inicio=cola.inicio.sig;
+				}*/
 			}
 	}
 	
-	public static boolean ver(String y) {
+	public static boolean ver(String y) { //funcion que verifica si es una operacion
 		char v= y.charAt(0);
 		if(v=='+'||v=='-'||v=='*'||v=='/'||v=='^') {
 			return true;
@@ -45,7 +50,15 @@ public class mainNumeros {
 			return false;
 		}
 	}
-	public static int operacion(String y, int s, int d) {
+	public static boolean verv(char v) { //funcion que verifica si es una operacion
+		
+		if(v=='+'||v=='-'||v=='*'||v=='/'||v=='^') {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public static int operacion(String y, int s, int d) {// hace la operacion que manda el string y los numeros
 		char v= y.charAt(0);
 		if(v=='+') {
 			return s+d;
@@ -65,7 +78,8 @@ public class mainNumeros {
 		while(cola.fin!=null) {
 			if(cola.fin!=null) {
 			String v= cola.sacacola();
-			boolean vera= ver(v);
+			boolean vera= EsOperacion(v);
+
 			if(vera==true) {
 				if(!pila.isEmpty()) {
 					int g=pila.pop();
@@ -76,7 +90,7 @@ public class mainNumeros {
 					}
 				}
 			}else {
-				pila.push(Integer.parseInt(v));
+				pila.push(convierteNumero(v));
 			}
 			}
 		}
@@ -84,5 +98,28 @@ public class mainNumeros {
 			return pila.pick();
 		}
 		return 0;
+	}
+	public static boolean EsOperacion(String x) { //retorna si es ina operacion o no
+		int j = x.length();
+		if(j>1) {
+			return false;
+		}else {
+			boolean segundo=ver(x);
+			if(segundo==false) {
+				return false;
+			}
+			return true;
+		}
+	}
+	public static int convierteNumero(String x) { //convierte el numero si es negativo o positivo
+		boolean negativo= verv(x.charAt(0));
+		if(negativo==true) {
+			String resul= x.substring(1);
+			int re= Integer.parseInt(resul)*(-1);
+			return re;
+		}else {
+			return Integer.parseInt(x);
+		}
+		
 	}
 }
