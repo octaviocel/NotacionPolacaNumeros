@@ -8,6 +8,92 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class mainNumeros {
+	public static int jerarquia(String car) {// obtenemos la jerarquia de la operacion
+		char caracter=car.charAt(0);
+		
+		if(caracter == '+'||caracter == '-') {
+			return 2;
+		}else if(caracter == '*'||caracter == '/') {
+			return 3;
+		}else if(caracter == '^') {
+			return 4;
+		}else if(caracter == '(') {
+			return 1;
+		}
+		return 0;
+	}
+	public static boolean verificajera(int x, int y) {//verifica cual jerarquia es mayor
+		return x>y;
+	}
+	public static ListaColNu resuelveNotacion(ListaColNu x) {
+		ListaColNu aux = x;
+		PilaString pila= new PilaString();
+		ListaColNu regreso=new ListaColNu();
+		while(aux.fin!=null) {
+			String temp=aux.fin.dato;
+			boolean es= EsOperacion(temp);
+			if(es==true) {
+				int jerar = jerarquia(temp);
+				if(pila.isEmpty()==true) {
+					pila.push(temp);
+				}else {
+					if(jerar==0) {
+						String prov=pila.pop();
+						int pro=jerarquia(prov);
+						while(pro!=1){
+							regreso.put(prov);
+							if(pila.isEmpty()!=true) {
+							prov=pila.pop();
+							pro=jerarquia(prov);
+							}else {
+								pro=1;
+							}
+							}
+						
+						
+					}else if(jerar==1) {
+						pila.push(temp);
+					}else {
+					String tienepila = pila.pick();
+					int cotr = jerarquia(tienepila);
+					boolean comparajerarquia=verificajera(jerar,cotr);
+					if(comparajerarquia==true|| cotr==1) {
+						pila.push(temp);
+					}else {
+						
+							String b=pila.pop();
+							char trans= b.charAt(0);
+							System.out.println(trans);
+							if(trans=='('|| trans==')') {
+								
+							}else {
+							regreso.put(Character.toString(trans));
+							}
+							
+						pila.push(temp);
+						}
+					}
+				}
+			}else {
+				regreso.put(temp);
+			}
+			aux.fin=aux.fin.ant;
+		}
+		if(pila.isEmpty()!=true) {
+			while(pila.isEmpty()!=true) {
+			String a=pila.pop();
+			char ultimo=a.charAt(0);
+			if(ultimo=='('|| ultimo==')') {
+				
+			}else {
+			
+			regreso.put(Character.toString(ultimo));
+			}
+			}
+		}
+		return regreso;
+		
+	}
 
 	public static void main(String[] args) throws IOException {
 		try (// TODO Auto-generated method stub
@@ -30,21 +116,24 @@ public class mainNumeros {
 				while(tokens.hasMoreTokens()){
 					cola.put(tokens.nextToken());
 				}
-				int resul = resuelve(cola);
-				System.out.println("El resultado de tu notacion polaca es: ");
+				reader.close();
+				System.out.println("Tu ecuacion es: ");
+				cola.recorre();
+				ListaColNu ecuacion= resuelveNotacion(cola);
+				System.out.println();
+				System.out.println("Tu ecuacion polaca es: ");
+				ecuacion.recorre();
+				System.out.println();
+				int resul = resuelve(ecuacion);
+				System.out.println("El resultado de tu ecuacion es: ");
 				System.out.println(resul);
 				
-				reader.close();
-				/*while(cola.inicio!=null) {
-					System.out.println(cola.inicio.dato);
-					cola.inicio=cola.inicio.sig;
-				}*/
 			}
 	}
 	
 	public static boolean ver(String y) { //funcion que verifica si es una operacion
 		char v= y.charAt(0);
-		if(v=='+'||v=='-'||v=='*'||v=='/'||v=='^') {
+		if(v=='+'||v=='-'||v=='*'||v=='/'||v=='^'||v=='('||v==')') {
 			return true;
 		}else {
 			return false;
@@ -99,7 +188,7 @@ public class mainNumeros {
 		}
 		return 0;
 	}
-	public static boolean EsOperacion(String x) { //retorna si es ina operacion o no
+	public static boolean EsOperacion(String x) {
 		int j = x.length();
 		if(j>1) {
 			return false;
@@ -111,7 +200,7 @@ public class mainNumeros {
 			return true;
 		}
 	}
-	public static int convierteNumero(String x) { //convierte el numero si es negativo o positivo
+	public static int convierteNumero(String x) {
 		boolean negativo= verv(x.charAt(0));
 		if(negativo==true) {
 			String resul= x.substring(1);
